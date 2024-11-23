@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <link rel="stylesheet" href="styles.css" /> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>Content</title>
+    <style>
+      *,
+      ::before,
+      ::after {
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f4f8;
+        color: #3b3a5b;
+        position: relative;
+      }
+
+      header {
+        background: black;
+        padding: 20px;
+        text-align: center;
+        color: white;
+        padding: 2rem;
+      }
+
+      .content {
+        display: flex;
+      }
+
+      .topic-container {
+        width: 20%;
+        overflow-y: auto;
+        height: 90vh;
+        padding: 10px;
+        border-right: 1px solid #ccc;
+      }
+
+      #topic-content {
+        width: 80%;
+        overflow-y: auto;
+        max-height: 80vh;
+        padding: 10px;
+        position: relative;
+      }
+
+      .topic-content-bg-image {
+        position: absolute;
+        width: 95%;
+        height: 100%;
+        z-index: -100;
+        opacity: 0.3;
+      }
+
+      .subtopicmain {
+        font-size: 20px;
+        color: black;
+        border: none;
+        margin: 10px 0;
+        border-radius: 5px;
+        cursor: pointer;
+        background: none;
+        padding: 10px;
+        width: 100%;
+        font-weight: 400;
+        text-align: left;
+        border-bottom: 1px solid #ccc;
+        transition: background-color 0.3s;
+      }
+
+      .subtopicmain:hover {
+        background-color: #f0f4f8;
+      }
+
+      .subtopicmain.active {
+        font-weight: 900;
+        color: black;
+      }
+
+      .subtopic {
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.532);
+        border: none;
+        margin: 10px 0;
+        border-radius: 5px;
+        cursor: pointer;
+        background: none;
+        padding: 10px;
+        width: 100%;
+        text-align: left;
+        border-bottom: 1px solid #ccc;
+        transition: background-color 0.3s;
+      }
+
+      .subtopic:hover {
+        background-color: #f0f4f8;
+      }
+
+      .subtopic.active {
+        background-color: black;
+        color: white;
+      }
+
+      .dropdown-content {
+        display: none;
+        padding-left: 20px;
+        border-radius: 5px;
+        margin-top: 5px;
+      }
+
+      .subtopic.active .dropdown-content {
+        display: block;
+        border: 1px solid #5f72be;
+      }
+
+      /* Chatbot styles */
+      .chat-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: transparent;
+        color: white;
+        border: none;
+        border-radius: 50%;
+
+        font-size: 24px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .chat-button h3 {
+        color: black;
+        font-size: 14px;
+        background: rgb(255, 255, 255);
+        padding: 8px 16px;
+        border-radius: 3px;
+        box-shadow: 4px 4px black;
+      }
+
+      .chat-button:hover {
+        transform: scale(1.1);
+      }
+      #chatbot {
+        background-color: red;
+      }
+
+      .chatbot {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 350px;
+        height: 600px;
+        border: 1px solid #ccc;
+        background-color: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        display: none;
+        opacity: 0;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+
+      .chatbot.open {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .chatbot-header {
+        background-color: black;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-weight: bold;
+        border-radius: 5px 5px 0 0;
+      }
+
+      .chat-body {
+        max-height: 500px;
+        height: 100%;
+        padding: 10px;
+        flex-grow: 1;
+        overflow-y: auto;
+        background-color: white;
+      }
+
+      .chatbot-avatar {
+        width: 60px;
+        height: 60px;
+      }
+
+      .chatbot-reponse-avatar {
+        width: 20px;
+        height: 20px;
+      }
+
+      .response-content {
+        text-align: left;
+        padding: 20px;
+      }
+
+      .topic-response {
+        max-width: 80%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 42px;
+      }
+
+      .topic-response-content {
+        display: flex;
+        justify-content: start;
+        gap: 20px;
+      }
+
+      .topic-response h1 {
+        font-weight: bold;
+        font-size: 62px;
+        color: black;
+        text-shadow: 4px 4px rgba(221, 255, 0, 0.251);
+      }
+
+      .topic-response p {
+        font-size: 20px;
+        color: black;
+      }
+
+      .topic-image {
+        max-width: 100%;
+        height: 400px;
+        object-fit: cover;
+        border-radius: 16px;
+        border: 4px solid rgba(0, 0, 0, 0.217);
+      }
+
+      .chat-input {
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        display: flex;
+        border-top: 1px solid #ccc;
+        padding: 10px;
+        background: white;
+        border-radius: 0 0 5px 5px;
+      }
+
+      .chat-input input {
+        flex: 1;
+        padding: 15px;
+        border: 1px solid #7d7d7d5b;
+        border-radius: 5px 0 0 5px;
+        outline: none;
+      }
+
+      .chat-input button {
+        background-color: black;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 0 5px 5px 0;
+        cursor: pointer;
+      }
+
+      .chat-input button:hover {
+        background-color: black;
+        color: white;
+      }
+
+      .chat-message {
+        margin: 5px 0;
+      }
+
+      .chat-message.user {
+        width: max-content;
+        /* text-align: right; */
+        align-self: right;
+        color: black;
+        background: rgba(128, 128, 128, 0.272);
+        padding: 0.8rem 1.2rem;
+        border-radius: 0.5rem;
+        text-wrap: wrap;
+      }
+
+      .chat-message.ai {
+        text-align: right;
+        color: #3b3a5b;
+        display: flex;
+        justify-content: left;
+        align-items: start;
+      }
+
+      @media (max-width: 768px) {
+        .chatbot {
+          width: 90%;
+          right: 5%;
+          bottom: 10px;
+        }
+
+        .chat-button {
+          width: 50px;
+          height: 50px;
+          font-size: 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Explore by topic</h1>
+      <p>
+        Find new interests and advance career opportunities with courses in
+        Design Thinking.
+      </p>
+    </header>
+    <main class="content">
+      <div class="topic-container">
+        <div class="subtopics">
+          <button class="subtopicmain" onclick="toggleDropdown(this)">
+            Entrepreneurial Behavior
+          </button>
+          <div class="dropdown-content">
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Entrepreneurship Concept
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Entrepreneurial Traits and Characteristics
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Entrepreneurial Mindset, Skill Set, and Tool Set
+            </button>
+          </div>
+
+          <button class="subtopicmain" onclick="toggleDropdown(this)">
+            Design Thinking Process
+          </button>
+          <div class="dropdown-content">
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Introduction to Design Thinking
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Phases/Stages of Design Thinking
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Human-Centric Design
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Problem-Solving Approach
+            </button>
+          </div>
+
+          <button class="subtopicmain" onclick="toggleDropdown(this)">
+            Entrepreneurial Design Thinking
+          </button>
+          <div class="dropdown-content">
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Creative Commons: Entrepreneurship and Design Thinking
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Benefits and Challenges of Applying Design Thinking
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Entrepreneurial Problem-Solving Approach (Dutch Design Delta
+              Model)
+            </button>
+          </div>
+
+          <button class="subtopicmain" onclick="toggleDropdown(this)">
+            Context Design
+          </button>
+          <div class="dropdown-content">
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Framing the Right Problem
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Empathy with End-Users and Stakeholders
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Gaining Insights and Knowledge from Target Groups
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Identifying Opportunities within Context
+            </button>
+          </div>
+
+          <button class="subtopicmain" onclick="toggleDropdown(this)">
+            Concept Design
+          </button>
+          <div class="dropdown-content">
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Using Design Thinking Tools to Generate New Ideas
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Transforming Ideas into Concrete Concepts
+            </button>
+          </div>
+
+          <button class="subtopicmain" onclick="toggleDropdown(this)">
+            Market Design
+          </button>
+          <div class="dropdown-content">
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Prototyping Approaches for Market Introduction
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Iterative Design to Enhance Concept Functionality
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Testing, Improving, and Detailing Concepts
+            </button>
+          </div>
+
+          <button class="subtopicmain" onclick="toggleDropdown(this)">
+            Concept Pitching
+          </button>
+          <div class="dropdown-content">
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Pitching Entrepreneurial Stories and Innovative Concepts to
+              Sponsors, Customers, and Investors
+            </button>
+          </div>
+
+          <button class="subtopicmain" onclick="toggleDropdown(this)">
+            Challenges in Design Thinking
+          </button>
+          <div class="dropdown-content">
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Challenges in Every Phase of Design Thinking
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Strategies to Overcome These Challenges
+            </button>
+          </div>
+
+          <button class="subtopicmain" onclick="toggleDropdown(this)">
+            Hands-on Workshops
+          </button>
+          <div class="dropdown-content">
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Identifying Problems/Opportunities
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Empathetic Market Research
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Problem Definition and Ideation
+            </button>
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Concept Pitching for Entrepreneurial Skills (e.g.,
+              Customer-Centric Approach, Innovation, Creativity,
+              Decision-Making)
+            </button>
+          </div>
+
+          <button class="subtopicmain" onclick="toggleDropdown(this)">
+            Prototype Building Workshops
+          </button>
+          <div class="dropdown-content">
+            <button class="subtopic" onclick="sendSubtopicMessage(this)">
+              Practical Workshops for Building Prototypes
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="topic-content">
+        <img
+          class="topic-content-bg-image"
+          src="./images/grid-bg.png"
+          alt=""
+          srcset=""
+        />
+        <div
+          id="response-content"
+          class="response-content"
+          style="display: none"
+        ></div>
+      </div>
+    </main>
+
+    <!-- Floating button to toggle chatbot -->
+    <button class="chat-button" onclick="toggleChatbot()">
+      <h3>Hello! Let's Chat</h3>
+      <image class="chatbot-avatar" src="./images/bot.svg" />
+    </button>
+
+    <!-- Chatbot UI -->
+    <div class="chatbot" id="chatbot">
+      <div class="chatbot-header">Design Thinking Chatbot</div>
+      <div class="chat-body" id="chat-body">
+        <p>Hi there! How can I help you?</p>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="chat-input" placeholder="Type your message..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <script>
+      // Add this code at the end of the script section
+      window.addEventListener("DOMContentLoaded", () => {
+        const entrepreneurButton = document.querySelector(".subtopicmain");
+        toggleDropdown(entrepreneurButton);
+      });
+
+      const topicContentwithImage = {
+        "Entrepreneurial Behavior": {
+          content:
+            "Entrepreneurial Behavior refers to the mindset and actions typical of individuals who actively seek out and capitalize on new business opportunities. People who exhibit entrepreneurial behavior are often characterized by a strong sense of initiative, resilience, and a willingness to take calculated risks. They possess the drive to push through obstacles and adapt to changing circumstances, allowing them to navigate the uncertainties of business ventures. Entrepreneurial behavior isn’t just about starting a new business; it’s a way of thinking that can also be applied within established organizations to foster innovation and growth. By encouraging this behavior, companies can cultivate a culture that values creativity, continuous improvement, and the pursuit of new market opportunities, which can be pivotal in today’s rapidly evolving economic landscape.",
+          imagePath: "images/topics-images/Entrepreneurial-Behavior.webp",
+        },
+        "Design Thinking Process": {
+          content:
+            "The Design Thinking Process is a user-centered approach to problem-solving that places a strong emphasis on understanding the needs, desires, and limitations of the end user. This approach is typically broken down into five stages: Empathize, Define, Ideate, Prototype, and Test. During the Empathize stage, designers seek to deeply understand the target audience by engaging with them and observing their behavior. In the Define phase, they clarify the problem based on insights gathered, reframing it in a way that leads to creative solutions. Ideation then allows for brainstorming and exploring different possible solutions, which are then represented in tangible form through Prototyping. Testing these prototypes with users provides valuable feedback that can be used to refine and improve the solution. By iterating through these stages, design thinking encourages continuous improvement, resulting in innovative and user-focused solutions that are more likely to succeed in the market.",
+          imagePath: "images/topics-images/Design-Thinking-Process.webp",
+        },
+        "Entrepreneurial Design Thinking": {
+          content:
+            "Entrepreneurial Design Thinking merges the empathy-driven approach of design thinking with the opportunity-seeking mindset of entrepreneurship. This fusion emphasizes not only creating solutions that address real user needs but also ensuring that these solutions are viable and scalable as business opportunities. Entrepreneurial design thinkers approach problems with both a creative and a business-oriented perspective, exploring ways to generate value while staying grounded in user insights. This dual focus helps entrepreneurs develop products or services that not only solve problems effectively but also stand a good chance of achieving market success. By combining the human-centered methodologies of design thinking with the entrepreneurial drive for value creation, this approach fosters innovative solutions that are both meaningful to users and sustainable as business ventures.",
+          imagePath:
+            "images/topics-images/Entrepreneurial-Design-Thinking.webp",
+        },
+        "Context Design": {
+          content:
+            "In Context Design, the emphasis is on understanding and designing for the specific context in which a product, service, or solution will be used. This requires a deep analysis of the environmental, social, cultural, and economic factors that influence user behavior and experience. By considering these elements, designers can ensure that their solutions are relevant, effective, and sensitive to the specific circumstances of the target audience. Context design encourages designers to look beyond the product itself and consider how it will fit into the user’s life, environment, and community. This approach often results in more tailored and impactful solutions, as it addresses not only the functional needs of users but also their emotional and contextual needs.",
+          imagePath: "images/topics-images/Context-Design.webp",
+        },
+        "Concept Design": {
+          content:
+            "Concept Design is the phase where the initial ideas and insights gathered from user research and brainstorming sessions are transformed into more concrete concepts. This stage involves creating early representations of the product or service, whether through sketches, models, or digital prototypes, to explore various ways to bring an idea to life. Concept design is a creative process that allows designers to experiment with different forms, functions, and features, refining the idea until it aligns well with user needs and expectations. This phase is crucial as it sets the foundation for further development, bridging the gap between abstract ideas and tangible solutions.",
+          imagePath: "images/topics-images/Concept-Design.webp",
+        },
+        "Market Design": {
+          content:
+            "Market Design focuses on understanding and structuring the market environment to support the successful launch and growth of a new product or service. It involves identifying target demographics, analyzing competition, determining pricing strategies, and considering distribution channels to ensure that the solution reaches its intended audience effectively. Market design requires a blend of business acumen and strategic thinking to navigate the complexities of introducing something new to the market. By carefully analyzing the competitive landscape and consumer behavior, entrepreneurs can position their offerings more effectively, increasing the chances of success in a crowded marketplace.",
+          imagePath: "images/topics-images/Market-Design.webp",
+        },
+        "Concept Pitching": {
+          content:
+            "Concept Pitching is the art of presenting an idea in a clear, compelling way that captures the interest and support of potential investors, partners, or stakeholders. A successful pitch goes beyond explaining what the product or service is; it communicates the unique value, the problem it solves, and why it’s worth investing in. This often involves storytelling to make the idea relatable and memorable, as well as demonstrating an understanding of market potential and growth opportunities. Concept pitching is essential for securing resources and building relationships that can propel the idea from concept to reality.",
+          imagePath: "images/topics-images/Concept-Pitching.webp",
+        },
+        "Challenges in Design Thinking": {
+          content:
+            "Challenges in Design Thinking highlight the difficulties that arise when implementing a human-centered approach to problem-solving. While design thinking is a powerful tool, it can be challenging to integrate within traditional business processes that may prioritize efficiency and profitability over user-centered innovation. Some common obstacles include resistance to change, limited resources for prototyping and testing, and difficulty in fully understanding and empathizing with diverse user needs. Additionally, the iterative nature of design thinking can seem time-consuming, especially in fast-paced business environments. Overcoming these challenges requires commitment to the process, as well as flexibility to adapt design thinking principles to fit the specific context and constraints of the organization.",
+          imagePath:
+            "images/topics-images/Challenges-In-Designing-Thinking.png",
+        },
+        "Hands-on Workshops": {
+          content:
+            "Hands-on Workshops provide an interactive environment where participants can practice the principles of design thinking, prototyping, and other innovation techniques in a collaborative setting. These workshops allow for experiential learning, where participants engage in activities that simulate real-world challenges, encouraging creative problem-solving and team collaboration. Hands-on workshops are effective in fostering a deeper understanding of design and entrepreneurial concepts, as they give participants the opportunity to apply what they have learned in a controlled environment. This experiential approach often leads to more impactful learning outcomes, as it reinforces theoretical knowledge through practice.",
+          imagePath: "images/topics-images/Hands-on-Workshop.png",
+        },
+        "Prototype Building Workshops": {
+          content:
+            "Prototype Building Workshops are specialized sessions focused on the development of tangible prototypes that represent the core functionalities of a product or service. These workshops guide participants through the process of translating abstract ideas into physical or digital forms, allowing for early testing and feedback. Prototyping workshops encourage creativity and experimentation, as participants can quickly test and refine their ideas without the fear of failure. These workshops are valuable because they provide a hands-on experience that brings concepts to life, enabling participants to gain insights into the usability, feasibility, and appeal of their solutions. By learning to build and test prototypes, participants gain practical skills that are essential for turning ideas into viable products.",
+          imagePath: "images/topics-images/Prototype-Building-Workshop.png",
+        },
+      };
+
+      function toggleDropdown(button) {
+        const dropdown = button.nextElementSibling;
+        const allButtons = document.querySelectorAll(".subtopicmain");
+
+        const responseContent = document.getElementById("response-content");
+
+        // Close all dropdowns first
+        allButtons.forEach((btn) => {
+          if (btn !== button) {
+            btn.classList.remove("active");
+            btn.nextElementSibling.style.display = "none";
+          }
+        });
+
+        // Toggle the clicked button's dropdown
+        button.classList.toggle("active");
+
+        const isActive = button.classList.contains("active");
+        responseContent.textContent = "";
+
+        // if current main topic TAB is active
+        if (isActive) {
+          responseContent.style.display = "block";
+          responseContent.innerHTML += `
+                <div class="topic-response">
+                  <h1>${button.innerText}</h1>
+                  <section class="topic-response-content">
+                    <p class="topic-content">${
+                      topicContentwithImage[button.innerText].content
+                    }</p>
+                    <img class="topic-image" src="${
+                      topicContentwithImage[button.innerText].imagePath
+                    }" alt=${button.innerText}/>
+                    </section>
+                </div>
+              `;
+        } else if (!isActive) {
+          responseContent.style.display = "none";
+          responseContent.textContent = "";
+        }
+
+        dropdown.style.display =
+          dropdown.style.display === "block" ? "none" : "block";
+      }
+
+      function toggleChatbot() {
+        const chatbot = document.getElementById("chatbot");
+        const isVisible = chatbot.style.display === "block";
+        chatbot.style.display = isVisible ? "none" : "block";
+        chatbot.style.opacity = isVisible ? "0" : "1";
+        chatbot.style.transform = isVisible
+          ? "translateY(20px)"
+          : "translateY(0)";
+      }
+
+      document
+        .getElementById("chat-input")
+        .addEventListener("keydown", function (event) {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            sendMessage();
+          }
+        });
+
+      async function sendMessage() {
+        const input = document.getElementById("chat-input");
+        const message = input.value;
+
+        if (message) {
+          const chatBody = document.getElementById("chat-body");
+          chatBody.innerHTML += `<div class="chat-message user"><strong>You:</strong> ${message}</div>`;
+          input.value = "";
+
+          console.log("Message ", message);
+
+          try {
+            const response = await fetch("http://10.7.0.28:5000/chat", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ query: message }),
+            });
+
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+
+            console.log(`${response.ok ? "TRUE" : "FALSE"}`);
+
+            const data = await response.json();
+            chatBody.innerHTML += `<div class="chat-message ai"><image class="chatbot-reponse-avatar" src="./images/bot.svg"> : ${data?.response}</div>`;
+            chatBody.scrollTop = chatBody.scrollHeight;
+          } catch (error) {
+            console.error("Error:", error);
+            chatBody.innerHTML += `<div class="chat-message ai"><strong>Error:</strong> Unable to get response from AI.</div>`;
+          }
+        }
+      }
+
+      async function sendSubtopicMessage(subtopicButton) {
+        const subtopics = document.querySelectorAll(".subtopic");
+        subtopics.forEach((subtopic) => subtopic.classList.remove("active"));
+
+        subtopicButton.classList.add("active");
+
+        console.log(subtopicButton.innerText);
+
+        const data = await fetchResponse(subtopicButton?.innerText);
+        console.log("DATA ", data);
+      }
+
+      async function fetchResponse(message) {
+        console.log("MESSAGE ", message);
+
+        let isLoading = true;
+        let showMessageWhileLoading = "thinking...";
+
+        try {
+          const response = await fetch("http://10.7.0.28:5000/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query: message }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          const data = await response.json();
+
+          console.log("DATA ", data);
+
+          const responseContent = document.getElementById("response-content");
+
+          isLoading = responseContent.textContent = showMessageWhileLoading;
+          responseContent.innerHTML = `<div class="chat-message ai"><strong>AI:</strong> ${
+            data?.response || "No response."
+          }</div>`;
+          responseContent.style.display = "block";
+        } catch (error) {
+          console.error("Error:", error);
+          const responseContent = document.getElementById("response-content");
+          responseContent.innerHTML = `<div class="chat-message ai"><strong>Error:</strong> Unable to get response from AI.</div>`;
+          responseContent.style.display = "block";
+        } finally {
+          isLoading = false;
+        }
+      }
+    </script>
+  </body>
+</html>

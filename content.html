@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Content</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            color: #3b3a5b;
+            position: relative;
+        }
+
+        header {
+            background: linear-gradient(135deg, #5f72be, #3b3a5b);
+            padding: 40px;
+            text-align: center;
+            border-bottom: 5px solid #ff6f61;
+            color: #ffcc00;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Chatbot styles */
+        .chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff6f61;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            z-index: 1000; /* Ensure button is above other elements */
+        }
+
+        .chat-button:hover {
+            background-color: #e95e5e;
+            transform: scale(1.1);
+        }
+
+        .chatbot {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 300px;
+            height: 400px;
+            border: 1px solid #ccc;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .chatbot.open {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chatbot-header {
+            background-color: #5f72be;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .chat-body {
+            padding: 10px;
+            flex-grow: 1;
+            overflow-y: auto;
+            max-height: 350px; 
+            background-color: white;
+        }
+
+        .chat-input {
+            display: flex;
+            border-top: 1px solid #ccc;
+            padding: 5px; 
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px 0 0 10px; 
+        }
+
+        .chat-input button {
+            background-color: #ff6f61;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 0 10px 10px 0; 
+            cursor: pointer;
+        }
+
+        .chat-input button:hover {
+            background-color: #ff3b1f;
+        }
+
+        .chat-message {
+            margin: 5px 0;
+        }
+
+        .chat-message.user {
+            text-align: right;
+            color: #4caf50;
+        }
+
+        .chat-message.ai {
+            text-align: left;
+            color: #3b3a5b;
+        }
+
+        @media (max-width: 768px) {
+            .chatbot {
+                width: 90%;
+                right: 5%;
+                bottom: 10px;
+            }
+
+            .chat-button {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1 id="topic-title">Topic Title</h1>
+    </header>
+    <main class="content">
+        <div id="topic-content">
+            <p>Loading content...</p>
+        </div>
+    </main>
+    <footer>
+        <a href="main.html">Back to Topics</a>
+    </footer>
+
+    <!-- Floating button to toggle chatbot -->
+    <button class="chat-button" onclick="toggleChatbot()">💬</button>
+
+    <!-- Chatbot UI -->
+    <div class="chatbot" id="chatbot">
+        <div class="chatbot-header">Chatbot</div>
+        <div class="chat-body" id="chat-body"></div>
+        <div class="chat-input">
+            <input type="text" id="chat-input" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const topic = urlParams.get('topic');
+
+        const content = {
+            'architecture-history': 'This section covers the history of architecture, exploring various styles and movements.',
+            'architectural-restoration': 'Architectural restoration is the process of accurately depicting the form, features, and character of a property as it appeared at a particular period of time.',
+            'construction': 'Construction is the process of creating and building infrastructure.',
+            'dynamics': 'Dynamics studies forces and their effects on motion.',
+            'history': 'History is the study of past events, particularly in human affairs.',
+            'housing': 'Housing refers to the arrangements of shelter for individuals or groups.',
+            'infrastructure': 'Infrastructure refers to the fundamental facilities and systems serving a country, city, or area.',
+            'physics': 'Physics is the natural science that studies matter, its motion, and behavior through space and time.',
+            'railway-engineering': 'Railway engineering is a branch of civil engineering that deals with the design, construction, and operation of railway systems.',
+            'religion': 'Religion is a social-cultural system of designated behaviors and practices.',
+            'steel': 'Steel is an alloy of iron and carbon, widely used in construction and manufacturing.',
+            'transportation': 'Transportation is the movement of people or goods from one place to another.',
+            'vernacular-architecture': 'Vernacular architecture refers to housing or building styles that are native to a particular area.',
+            'world-history': 'World history is the study of global historical processes and events.'
+        };
+
+        document.getElementById('topic-title').innerText = topic.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+        document.getElementById('topic-content').innerHTML = content[topic] || 'Content not found.';
+
+        function toggleChatbot() {
+            const chatbot = document.getElementById("chatbot");
+            const isVisible = chatbot.style.display === "block";
+            chatbot.style.display = isVisible ? "none" : "block";
+            chatbot.style.opacity = isVisible ? "0" : "1";
+            chatbot.style.transform = isVisible ? "translateY(20px)" : "translateY(0)";
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById("chat-input");
+            const message = input.value;
+            if (message) {
+                const chatBody = document.getElementById("chat-body");
+                chatBody.innerHTML += `<div class="chat-message user"><strong>You:</strong> ${message}</div>`;
+                input.value = "";
+
+                try {
+                    const response = await fetch('http://10.7.0.28:8000/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ query: message }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+
+                    chatBody.innerHTML += `<div class="chat-message ai"><strong>AI:</strong> ${data?.response}</div>`;
+                    chatBody.scrollTop = chatBody.scrollHeight; // Auto-scroll to bottom
+                } catch (error) {
+                    console.error('Error:', error);
+                    chatBody.innerHTML += `<div class="chat-message ai"><strong>Error:</strong> Unable to get response from AI.</div>`;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Python Learning Hub</title>
+    <link rel="shortcut icon" href="images/logo.png" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/subject.css" />
+  </head>
+
+  <body>
+    <div id="welcome-section">
+      <img src="images/design-thinking-banner.svg" alt="Robot" id="robot" />
+      <p id="welcome-message" class="welcome-message">
+        Welcome to the Design Thinking Learning hub!
+      </p>
+      <a href="home.html"
+        ><button id="start-button" onclick="startReading()">
+          Start Reading
+        </button></a
+      >
+    </div>
+
+    <audio
+      id="welcome-audio"
+      src="images/speechaudio.mp3"
+      preload="auto"
+    ></audio>
+
+    <script>
+      function speakWelcomeMessage() {
+        const message =
+          "Welcome! Please use this platform for studying Designing Thinking.";
+        const speech = new SpeechSynthesisUtterance(message);
+        window.speechSynthesis.speak(speech);
+      }
+
+      function startReading() {
+        document.getElementById("welcome-section").style.display = "none";
+        showInitialMessage();
+      }
+
+      window.onload = () => {
+        speakWelcomeMessage();
+        playWelcomeAudio();
+      };
+
+      function playWelcomeAudio() {
+        const audio = document.getElementById("welcome-audio");
+        audio.play().catch((error) => {
+          console.error("Error playing audio:", error);
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Content</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            color: #3b3a5b;
+        }
+        header {
+            background: linear-gradient(135deg, #5f72be, #3b3a5b);
+            padding: 40px;
+            text-align: center;
+            border-bottom: 5px solid #ff6f61;
+            color: #ffcc00;
+        }
+        .content {
+            padding: 20px;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1 id="topic-title">Topic Title</h1>
+    </header>
+    <main class="content">
+        <div id="topic-content">
+            <p>Loading content...</p>
+        </div>
+    </main>
+    <footer>
+        <a href="main.html">Back to Topics</a>
+    </footer>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const topic = urlParams.get('topic');
+
+        const content = {
+            'animal-behavior': 'This section explores the various behaviors observed in animals.',
+            'anatomy': 'Anatomy is the study of the structure of organisms.',
+            'biochemistry': 'Biochemistry is the study of chemical processes within and relating to living organisms.',
+            'ecology': 'Ecology is the study of interactions between organisms and their environment.',
+            'genetics': 'Genetics is the study of heredity and the variation of inherited characteristics.',
+            'medicine': 'Medicine is the science and practice of diagnosing and treating illness.',
+            'microbiology': 'Microbiology is the study of microscopic organisms.',
+            'neuroscience': 'Neuroscience is the study of the nervous system and its functions.',
+            'nutrition': 'Nutrition is the process of providing or obtaining the food necessary for health and growth.',
+            'pathophysiology': 'Pathophysiology is the study of disordered physiological processes associated with disease.',
+            'viruses': 'Viruses are microscopic infectious agents that can replicate only inside the living cells of an organism.'
+        };
+
+        document.getElementById('topic-title').innerText = topic.charAt(0).toUpperCase() + topic.slice(1);
+        document.getElementById('topic-content').innerHTML = content[topic] || 'Content not found.';
+    </script>
+</body>
+
+</html>
